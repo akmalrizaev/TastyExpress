@@ -1,7 +1,8 @@
-import * as express from 'express';
+import { Server } from './server';
 
-let app: express.Application = express();
+let server = new Server().app;
+let port = 3000;
 
-app.listen(3000, () => {
-  console.log('Server is running at port 3000');
+server.listen(port, () => {
+  console.log(`Server is running at port ${port}`);
 });

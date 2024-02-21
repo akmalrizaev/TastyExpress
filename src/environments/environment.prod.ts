@@ -1,5 +1,5 @@
 import { Environment } from './environment';
 
 export const ProdEnvironment: Environment = {
-  db_uri: '',
+  db_uri: process.env.PROD_DB_URI,
 };

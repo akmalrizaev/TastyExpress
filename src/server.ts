@@ -3,6 +3,8 @@ import * as mongoose from 'mongoose';
 import * as bodyParser from 'body-parser';
 import { getEnvironmentVariables } from './environments/environment';
 import UserRouter from './routers/UserRouter';
+import * as dotenv from 'dotenv';
+import { Utils } from './utils/Utils';
 
 export class Server {
   public app: express.Application = express();
@@ -15,8 +17,13 @@ export class Server {
   }
 
   setConfigs() {
+    this.dotenvConfigs();
     this.connectMongoDB();
     this.configureBodyParser();
+  }
+
+  dotenvConfigs() {
+    Utils.dotenvConfigs();
   }
 
   connectMongoDB() {

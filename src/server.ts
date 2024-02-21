@@ -27,6 +27,8 @@ export class Server {
   }
 
   connectMongoDB() {
+    console.log(`----- ${getEnvironmentVariables().db_uri}  ---------`);
+    console.log(`------ ${process.env.DEV_DB_URI} ------`);
     mongoose.connect(getEnvironmentVariables().db_uri).then(() => {
       console.log('Connected to mongodb.');
     });

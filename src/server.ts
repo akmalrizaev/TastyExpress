@@ -1,6 +1,7 @@
 import * as express from 'express';
 import * as mongoose from 'mongoose';
 import * as bodyParser from 'body-parser';
+import * as cors from 'cors';
 import { getEnvironmentVariables } from './environments/environment';
 import UserRouter from './routers/UserRouter';
 import * as dotenv from 'dotenv';
@@ -19,6 +20,7 @@ export class Server {
   setConfigs() {
     this.dotenvConfigs();
     this.connectMongoDB();
+    this.allowCors();
     this.configureBodyParser();
   }
 
@@ -38,6 +40,10 @@ export class Server {
         extended: true,
       })
     );
+  }
+
+  allowCors() {
+    this.app.use(cors());
   }
 
   setRoutes() {

@@ -1,6 +1,7 @@
 import { UserValidators } from './../validators/UserValidators';
 import { UserController } from './../controllers/UserController';
 import { Router } from 'express';
+import { GlobalMiddleWare } from './../../middlewares/GlobalMiddleWare';
 
 class UserRouter {
   public router: Router;
@@ -24,10 +25,22 @@ class UserRouter {
   }
 
   postRoutes() {
-    this.router.post('/signup', UserValidators.signup(), UserController.signup);
+    this.router.post(
+      '/signup',
+      UserValidators.signup(),
+      GlobalMiddleWare.checkError,
+      UserController.signup
+    );
   }
 
-  patchRoutes() {}
+  patchRoutes() {
+    this.router.patch(
+      '/verify',
+      UserValidators.verifyUserEmail(),
+      GlobalMiddleWare.checkError,
+      UserController.verify
+    );
+  }
 
   putRoutes() {}
 

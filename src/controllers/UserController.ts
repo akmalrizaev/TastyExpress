@@ -1,6 +1,7 @@
 import User from '../models/User';
 import { validationResult } from 'express-validator';
 import { Utils } from '../utils/Utils';
+import { NodeMailer } from './../utils/NodeMailer';
 
 export class UserController {
   static async signup(req, res, next) {
@@ -10,10 +11,11 @@ export class UserController {
     const password = req.body.password;
     const type = req.body.type;
     const status = req.body.status;
+    const verification_token = Utils.generateVerificationToken();
 
     const data = {
       email,
-      verification_token: Utils.generateVerificationToken(),
+      verification_token: verification_token,
       verification_token_time: Date.now() + new Utils().MAX_TOKEN_TIME,
       phone,
       password,
@@ -24,8 +26,13 @@ export class UserController {
 
     try {
       let user = await new User(data).save();
-      // send email to user for verification
       res.send(user);
+      // send email to user for verification
+      await NodeMailer.sendMail({
+        to: [email],
+        subject: 'test',
+        html: `<h1>Your Otp is ${verification_token}`,
+      });
     } catch (e) {
       next(e);
     }

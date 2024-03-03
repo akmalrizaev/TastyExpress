@@ -22,6 +22,12 @@ class UserRouter {
     //   UserController.test1,
     //   UserController.test2
     // );
+
+    this.router.get(
+      '/send/verification/email',
+      UserValidators.verifyUserForResendEmail(),
+      UserController.resendVerificationEmail
+    );
   }
 
   postRoutes() {

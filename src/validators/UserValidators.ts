@@ -1,4 +1,4 @@
-import { body } from 'express-validator';
+import { body, query } from 'express-validator';
 import { nextTick } from 'process';
 import User from '../models/User';
 
@@ -49,5 +49,9 @@ export class UserValidators {
       ).isNumeric(),
       body('email', 'Email is required').isEmail(),
     ];
+  }
+
+  static verifyUserForResendEmail() {
+    return [query('email', 'Email is required').isEmail()];
   }
 }

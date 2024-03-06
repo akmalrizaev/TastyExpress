@@ -2,32 +2,19 @@ import User from '../models/User';
 import { validationResult } from 'express-validator';
 import { Utils } from '../utils/Utils';
 import { NodeMailer } from './../utils/NodeMailer';
-import * as Bcrypt from 'bcrypt';
 
 export class UserController {
-  private static encryptPassword(req, res, next) {
-    return new Promise((resolve, reject) => {
-      Bcrypt.hash(req.body.password, 10, (err, hash) => {
-        if (err) {
-          reject(err);
-        } else {
-          resolve(hash);
-        }
-      });
-    });
-  }
-
   static async signup(req, res, next) {
     const name = req.body.name;
     const phone = req.body.phone;
     const email = req.body.email;
-    // const password = req.body.password;
+    const password = req.body.password;
     const type = req.body.type;
     const status = req.body.status;
     const verification_token = Utils.generateVerificationToken();
 
     try {
-      const hash = await UserController.encryptPassword(req, res, next);
+      const hash = await Utils.encryptPassword(password);
       const data = {
         email,
         verification_token: verification_token,
@@ -40,7 +27,15 @@ export class UserController {
       };
 
       let user = await new User(data).save();
-      res.send(user);
+      const payload = {
+        user_id: user._id,
+        email: user.email,
+      };
+      const token = Utils.jwtSign(payload);
+      res.json({
+        token: token,
+        user: user,
+      });
       // send email to user for verification
       await NodeMailer.sendMail({
         to: [user.email],
@@ -120,6 +115,32 @@ export class UserController {
       } else {
         throw new Error('User does not exist');
       }
+    } catch (e) {
+      next(e);
+    }
+  }
+
+  static async login(req, res, next) {
+    const user = req.user;
+    const password = req.query.password;
+
+    const data = {
+      password: password,
+      encrypt_password: user.password,
+    };
+
+    try {
+      await Utils.comparePassword(data);
+
+      const payload = {
+        user_id: user._id,
+        email: user.email,
+      };
+      const token = Utils.jwtSign(payload);
+      res.json({
+        token: token,
+        user: user,
+      });
     } catch (e) {
       next(e);
     }

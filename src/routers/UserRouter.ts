@@ -26,7 +26,15 @@ class UserRouter {
     this.router.get(
       '/send/verification/email',
       UserValidators.verifyUserForResendEmail(),
+      GlobalMiddleWare.checkError,
       UserController.resendVerificationEmail
+    );
+
+    this.router.get(
+      '/login',
+      UserValidators.login(),
+      GlobalMiddleWare.checkError,
+      UserController.login
     );
   }
 

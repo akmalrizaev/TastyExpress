@@ -1,4 +1,7 @@
 import * as dotenv from 'dotenv';
+import * as Bcrypt from 'bcrypt';
+import { getEnvironmentVariables } from '../environments/environment';
+import * as Jwt from 'jsonwebtoken';
 
 export class Utils {
   public MAX_TOKEN_TIME = 5 * 60 * 1000;
@@ -14,5 +17,40 @@ export class Utils {
 
   static dotenvConfigs() {
     dotenv.config({ path: '.env' });
+  }
+
+  static encryptPassword(password) {
+    return new Promise((resolve, reject) => {
+      Bcrypt.hash(password, 10, (err, hash) => {
+        if (err) {
+          reject(err);
+        } else {
+          resolve(hash);
+        }
+      });
+    });
+  }
+
+  static comparePassword(data: {
+    password: string;
+    encrypt_password: string;
+  }): Promise<any> {
+    return new Promise((resolve, reject) => {
+      Bcrypt.compare(data.password, data.encrypt_password, (err, same) => {
+        if (err) {
+          reject(err);
+        } else if (!same) {
+          reject(new Error('User & Password does not Match'));
+        } else {
+          resolve(true);
+        }
+      });
+    });
+  }
+
+  static jwtSign(payload, expires_in: string = '180d') {
+    Jwt.sign(payload, getEnvironmentVariables().jwt_secret_key, {
+      expiresIn: expires_in,
+    });
   }
 }

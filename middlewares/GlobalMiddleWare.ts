@@ -9,4 +9,8 @@ export class GlobalMiddleWare {
       next();
     }
   }
+
+  static auth(req, res, next) {
+    const header_auth = req.headers.authorization;
+  }
 }

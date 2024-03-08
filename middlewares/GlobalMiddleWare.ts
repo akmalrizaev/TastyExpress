@@ -1,4 +1,5 @@
 import { validationResult } from 'express-validator';
+import { Jwt } from './../src/utils/Jwt';
 
 export class GlobalMiddleWare {
   static checkError(req, res, next) {
@@ -10,7 +11,16 @@ export class GlobalMiddleWare {
     }
   }
 
-  static auth(req, res, next) {
+  static async auth(req, res, next) {
     const header_auth = req.headers.authorization;
+    const token = header_auth ? header_auth.slice(7, header_auth.length) : null;
+    try {
+      req.errorStatus = 401;
+      const decoded = await Jwt.jwtVerify(token);
+      req.user = decoded;
+      next();
+    } catch (e) {
+      next(e);
+    }
   }
 }

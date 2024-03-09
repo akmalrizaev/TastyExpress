@@ -78,6 +78,7 @@ export class UserController {
         },
         {
           email_verified: true,
+          updated_at: new Date(),
         },
         {
           new: true,
@@ -104,17 +105,18 @@ export class UserController {
           email: email,
         },
         {
+          updated_at: new Date(),
           verification_token: verification_token,
           verification_token_time: Date.now() + new Utils().MAX_TOKEN_TIME,
         }
       );
       if (user) {
+        res.json({ success: true });
         await NodeMailer.sendMail({
           to: [user.email],
           subject: 'Resend Email Verification',
           html: `<h1>Your Otp is ${verification_token}`,
         });
-        res.json({ success: true });
       } else {
         throw new Error('User does not exist');
       }
@@ -144,6 +146,35 @@ export class UserController {
         token: token,
         user: user,
       });
+    } catch (e) {
+      next(e);
+    }
+  }
+
+  static async sendResetPasswordOtp(req, res, next) {
+    const email = req.query.email;
+    const reset_password_token = Utils.generateVerificationToken();
+    try {
+      const user = await User.findOneAndUpdate(
+        {
+          email: email,
+        },
+        {
+          updated_at: new Date(),
+          reset_password_token: reset_password_token,
+          reset_password_token_time: Date.now() + new Utils().MAX_TOKEN_TIME,
+        }
+      );
+      if (user) {
+        res.json({ success: true });
+        await NodeMailer.sendMail({
+          to: [user.email],
+          subject: 'Reset password email verification OTP',
+          html: `<h1>Your Otp is ${reset_password_token}`,
+        });
+      } else {
+        throw new Error('User does not exist');
+      }
     } catch (e) {
       next(e);
     }

@@ -179,4 +179,37 @@ export class UserController {
       next(e);
     }
   }
+
+  static async verifyResetPasswordOtp(req, res, next) {
+    try {
+      res.json({ success: true });
+    } catch (e) {
+      next(e);
+    }
+  }
+
+  static async resetPassword(req, res, next) {
+    const user = req.user;
+    const new_password = req.body.new_password;
+    try {
+      const encryptedPassword = await Utils.encryptPassword(new_password);
+      const updatedUser = await User.findOneAndUpdate(
+        {
+          _id: user._id,
+        },
+        {
+          updated_at: new Date(),
+          password: encryptedPassword,
+        },
+        { new: true }
+      );
+      if (updatedUser) {
+        res.send(updatedUser);
+      } else {
+        throw new Error('User does not exist');
+      }
+    } catch (e) {
+      next(e);
+    }
+  }
 }

@@ -44,7 +44,7 @@ class UserRouter {
     );
 
     this.router.get(
-      '/reset/password',
+      'send/reset/password/token',
       UserValidators.checkResetPasswordEmail(),
       GlobalMiddleWare.checkError,
       UserController.sendResetPasswordOtp
@@ -54,7 +54,7 @@ class UserRouter {
       '/verify/resetPasswordToken',
       UserValidators.verifyResetPasswordToken(),
       GlobalMiddleWare.checkError,
-      UserController.sendResetPasswordOtp
+      UserController.verifyResetPasswordOtp
     );
   }
 
@@ -68,6 +68,13 @@ class UserRouter {
   }
 
   patchRoutes() {
+    this.router.patch(
+      '/reset/password',
+      UserValidators.resetPassword(),
+      GlobalMiddleWare.checkError,
+      UserController.resetPassword
+    );
+
     this.router.patch(
       '/verify',
       UserValidators.verifyUserEmail(),

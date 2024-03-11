@@ -5,8 +5,13 @@ import * as jwt from 'jsonwebtoken';
 
 export class Jwt {
   static jwtSign(payload, expires_in: string = '180d') {
-    jwt.sign(payload, getEnvironmentVariables().jwt_secret_key, {
+    // const p1 = {
+    //   aud: id, iss: ''
+    // };
+
+    return jwt.sign(payload, getEnvironmentVariables().jwt_secret_key, {
       expiresIn: expires_in,
+      issuer: 'arizayev.uz',
     });
   }
 

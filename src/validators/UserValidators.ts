@@ -41,7 +41,7 @@ export class UserValidators {
     ];
   }
 
-  static verifyUserEmail() {
+  static verifyUserEmailToken() {
     return [
       body(
         'verification_token',

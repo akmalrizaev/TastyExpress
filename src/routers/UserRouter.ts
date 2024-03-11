@@ -54,7 +54,7 @@ class UserRouter {
       '/verify/resetPasswordToken',
       UserValidators.verifyResetPasswordToken(),
       GlobalMiddleWare.checkError,
-      UserController.verifyResetPasswordOtp
+      UserController.verifyResetPasswordToken
     );
   }
 
@@ -76,11 +76,11 @@ class UserRouter {
     );
 
     this.router.patch(
-      '/verify',
-      UserValidators.verifyUserEmail(),
-      GlobalMiddleWare.checkError,
+      '/verify/emailToken',
       GlobalMiddleWare.auth,
-      UserController.verify
+      UserValidators.verifyUserEmailToken(),
+      GlobalMiddleWare.checkError,
+      UserController.verifyUserEmailToken
     );
   }
 
